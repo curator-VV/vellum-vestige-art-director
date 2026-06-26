@@ -391,6 +391,7 @@ export default function App() {
       
       promptParts.push(`On the pages is the professional, high-end editorial photography capturing ${selectedTheme.desc}`);
       promptParts.push(`The photography is rendered with an intentional, happy, and heartwarming tone in ${selectedPhotoStyle.desc}`);
+      promptParts.push(`The photographic imagery must feature only adults and strictly contain no children, kids, toddlers, or babies whatsoever`);
       promptParts.push(`The pages are completely clean, empty, and pristine, containing no printed text, words, labels, page numbers, or watermark text whatsoever`);
       
       if (books.length > 1) {
@@ -522,6 +523,12 @@ export default function App() {
         label: "Pristine Unprinted Pages",
         desc: "Interior pages must contain no printed text, words, page numbers, or label print.",
         passed: state === "closed" ? true : (promptText.includes("no printed text") || promptText.includes("completely clean"))
+      },
+      {
+        id: "no_children",
+        label: "Adults-Only Imagery",
+        desc: "All photos must feature only adults and strictly contain no children, kids, toddlers, or babies.",
+        passed: state === "closed" ? true : (promptText.includes("no children") || promptText.includes("no kids") || promptText.includes("only adults"))
       }
     ];
 
@@ -1769,6 +1776,16 @@ export default function App() {
                     </h3>
                     <p className="text-stone-700 mt-1.5 text-[13px]">
                       Under no circumstances may printed words, titles, captions, page numbers, or watermark labels appear on interior spread pages. The pages must remain completely blank, clean, and silent, leaving the photographs as the sole visual content.
+                    </p>
+                  </div>
+
+                  {/* Rule 9 */}
+                  <div className="border-l-2 border-[#C5A059] pl-4">
+                    <h3 className="font-serif uppercase text-xs tracking-wider font-bold text-[#1F2022]">
+                      9. Adults-Only Photographic Content
+                    </h3>
+                    <p className="text-stone-700 mt-1.5 text-[13px]">
+                      All photographic imagery printed on the interior pages of the open spreads must feature only adults and strictly contain no children, kids, toddlers, or babies. This guarantees full compatibility with downstream AI animation and reel tools.
                     </p>
                   </div>
 
