@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: vellum-vestige-art-director
+    runtime: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
+    disk:
+      name: generations-disk
+      mountPath: /generations
+      sizeGB: 1

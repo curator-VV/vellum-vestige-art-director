@@ -13,8 +13,11 @@ async function startServer() {
 
   app.use(express.json({ limit: "10mb" }));
 
-  // Ensure workspace-relative generations folder exists for storing image outputs
-  const generationsDir = path.join(process.cwd(), "generations");
+  // Determine generations directory: use /generations if it exists (e.g., Render mounted disk), fallback to workspace-relative path
+  const generationsDir = fs.existsSync("/generations")
+    ? "/generations"
+    : path.join(process.cwd(), "generations");
+
   if (!fs.existsSync(generationsDir)) {
     fs.mkdirSync(generationsDir, { recursive: true });
   }
