@@ -473,7 +473,9 @@ export default function App() {
     }
 
     // Append aspect ratio token at the very end
-    const finalPrompt = promptParts.join(". ") + `. ${selectedPlatform.token}`;
+    const finalPrompt = promptParts
+      .map(part => part.trim().replace(/\.+$/, ""))
+      .join(". ") + `. ${selectedPlatform.token}`;
     return finalPrompt;
   };
 
