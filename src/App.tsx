@@ -314,7 +314,7 @@ export default function App() {
         promptParts.push(`The monographs are arranged side-by-side in an elegant overlapping row on the surface, showcasing the front cover of each book`);
       }
       
-      promptParts.push(`All books feature thick, substantial, high-density book blocks with clean-cut, perfectly stacked pages and smooth, even vertical paper block edges`);
+      promptParts.push(`All books feature a slim, high-end, 60-page book block profile with clean-cut, perfectly stacked pages of refined medium-thickness and smooth, even vertical paper block edges`);
       promptParts.push(`The spines of all the books in the collection are completely blank, smooth, and solid-toned cover material with zero printing, text, or markings`);
       
       // Describe each book in the stack/row
@@ -350,7 +350,7 @@ export default function App() {
       const selectedFoil = FOILS.find(f => f.id === book.foilStyle) || FOILS[0];
       
       promptParts.push(`A premium 12"x9" portrait monograph published by Vellum & Vestige`);
-      promptParts.push(`featuring a thick, substantial, high-density book block with clean-cut, perfectly stacked pages and a smooth, even vertical paper block edge`);
+      promptParts.push(`featuring a slim, high-end, 60-page book block profile with clean-cut, perfectly stacked pages of refined medium-thickness and a smooth, even vertical paper block edge`);
       promptParts.push(`bound in a pristine ${selectedSwatch.name} (${selectedSwatch.hex}) cover made of ${selectedMaterial.desc}`);
       promptParts.push(`The spine of the book is completely blank, smooth, and solid-toned cover material with zero printing, text, or markings`);
       promptParts.push(`Centered on the front cover, exactly one-third (1/3) of the way down from the top edge, in elegant, fine gold-embossed serif lettering, is the volume label: "${vol.label}: ${vol.title}"`);
@@ -371,7 +371,8 @@ export default function App() {
         ? "heavyweight textured museum-grade Hahnemühle matte art paper"
         : "heavyweight semi-matte giclée photographic paper with a smooth matte finish";
       
-      promptParts.push(`presented as an open spread monograph displaying thick, heavy pages of ${paperDesc} with perfectly clean-cut, straight edges and precise borders`);
+      promptParts.push(`presented as an open spread monograph displaying exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight edges and precise white paper borders`);
+      promptParts.push(`The open monograph must be constructed with a premium, authentic lie-flat binding, where the pages lie completely flat and flush across the center seam with no warping. The spine of the book is completely integrated and flush with the cover, lying flat against the surface, and is never detached, angled, or separated from the cover structure.`);
       
       // Select layout descriptions (at most two photos per spread)
       let layoutDesc = "";
@@ -398,7 +399,7 @@ export default function App() {
       } else if (spreadLayout === "seamless_panoramic") {
         layoutDesc = `The open spread features a Seamless Panoramic layout. A single large photograph physically bleeds off all outer edges of both pages, spanning continuously across the central seam with absolutely no white borders or margins.`;
       } else if (spreadLayout === "double_mat") {
-        layoutDesc = `The open spread features a Double Mat layout. Two identical, exact-size photographs are perfectly centered on the left and right pages, each framed by a very wide, clean, identical white paper matting margin.`;
+        layoutDesc = `The open spread features a Double Mat layout. Two identical, exact-size photographs are perfectly centered on the left and right pages, each framed by a very wide, clean, identical white paper matted margin.`;
       } else if (spreadLayout === "split_border") {
         layoutDesc = `The open spread features a Split-Border layout, where the photograph on the left page is framed by a crisp, thick white border, while the photograph on the right page bleeds completely off the outer edges of the page with no margins.`;
       }
@@ -413,22 +414,19 @@ export default function App() {
       promptParts.push(`The pages are completely clean, empty, and pristine, containing no printed text, words, labels, page numbers, or watermark text whatsoever`);
       
       if (books.length > 1) {
-        // Resting on top of a stack of the other closed monographs
-        const topBook = books[0];
-        const topSwatch = SWATCHES.find(s => s.id === topBook.swatch) || SWATCHES[0];
-        promptParts.push(`The open book rests flat on top of a neat stack of the other closed monographs in the collection, its thick book block edge showing the luxurious ${topSwatch.name} tone of the cover material (${topSwatch.hex})`);
+        promptParts.push(`The photograph displays a premium collection of exactly ${books.length} separate open-spread monographs arranged side-by-side in a clean, curated overlapping layout on the surface`);
         
-        const otherBooks = books.slice(1);
-        otherBooks.forEach((book, idx) => {
+        books.forEach((book, idx) => {
           const bSwatch = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
           const bMaterial = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
           const bVol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
-          promptParts.push(`Stacked directly underneath it is Volume ${idx + 2} (${bVol.title}) which is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}, showing its clean-cut edges and blank spine protruding slightly`);
+          
+          promptParts.push(`The ${idx === 0 ? "first" : idx === 1 ? "second" : idx === 2 ? "third" : "fourth"} open monograph (Volume ${idx + 1}: ${bVol.title}) is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}, lying flat next to the others with its pages open to reveal its own distinct editorial spread layout`);
         });
       } else {
         const topBook = books[0];
         const topSwatch = SWATCHES.find(s => s.id === topBook.swatch) || SWATCHES[0];
-        promptParts.push(`The thick edges of the book block underneath show the luxurious ${topSwatch.name} tone of the cover material (${topSwatch.hex}) resting flat on the surface`);
+        promptParts.push(`The thin book block edge underneath shows the luxurious ${topSwatch.name} tone of the cover material (${topSwatch.hex}) resting flat on the surface`);
       }
     }
 
