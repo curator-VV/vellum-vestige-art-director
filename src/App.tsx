@@ -297,85 +297,119 @@ export default function App() {
     };
   }, [isGenerating]);
 
-  // Generated text prompt calculation
   const getCompiledPrompt = () => {
     const selectedPlatform = PLATFORMS.find(p => p.id === platform) || PLATFORMS[0];
     const selectedLighting = LIGHTINGS.find(l => l.id === lightingStyle) || LIGHTINGS[0];
+    const selectedTheme = OPEN_PHOTO_THEMES.find(t => t.id === photoTheme) || OPEN_PHOTO_THEMES[0];
+    const selectedPhotoStyle = PHOTO_STYLES.find(s => s.id === photoStyle) || PHOTO_STYLES[0];
+    const selectedBackdrop = BACKDROPS.find(b => b.id === backdrop) || BACKDROPS[0];
     
+    const paperDesc = paperType === "hahnemuhle"
+      ? "heavyweight textured museum-grade Hahnemühle matte art paper"
+      : "heavyweight semi-matte giclée photographic paper with a smooth matte finish";
+
     let promptParts = [];
-    
-    if (state === "closed" && books.length > 1) {
-      // Multiple closed books stack/row
-      promptParts.push(`A premium composition displaying a collection of ${books.length} portrait monographs, each with a structural ratio of 12" vertical height by 9" width, published by Vellum & Vestige`);
-      
-      if (compositionArrangement === "stacked") {
-        promptParts.push(`The monographs are stacked neatly in a single vertical pile on the surface, with their spines aligned and the top book's front cover fully visible`);
-      } else {
-        promptParts.push(`The monographs are arranged side-by-side in an elegant overlapping row on the surface, showcasing the front cover of each book`);
-      }
-      
-      promptParts.push(`All books feature a slim, high-end, 60-page book block profile with clean-cut, perfectly stacked pages of refined medium-thickness and smooth, even vertical paper block edges`);
-      promptParts.push(`The spines of all the books in the collection are completely blank, smooth, and solid-toned cover material with zero printing, text, or markings`);
-      
-      // Describe each book in the stack/row
-      books.forEach((book, idx) => {
-        const bSwatch = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
-        const bMaterial = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
-        const bVol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
-        const bFoil = FOILS.find(f => f.id === book.foilStyle) || FOILS[0];
+
+    // Core Title / Meta info
+    promptParts.push(`A premium high-end editorial gallery photograph published by Vellum & Vestige`);
+
+    // 1. Sizing and Book block geometry (Rule 1 & Rule 9 update)
+    // Every book is strictly 12" vertical height by 9" width. Slim 60 pages creates a 1.25" total thickness.
+    const sizeConstraints = `Each monograph is formatted in a vertical portrait orientation measuring exactly 12 inches tall by 9 inches wide. The monograph features a slim, premium 60-page book block profile, resulting in a clean, high-end spine and block thickness of precisely 1.25 inches.`;
+    promptParts.push(sizeConstraints);
+
+    // 2. State & Quantity Rules (Rule 3)
+    if (state === "closed") {
+      // Closed state compilation
+      if (books.length === 1) {
+        // Single closed book
+        const book = books[0];
+        const sw = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
+        const mat = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
+        const vol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
+        const foil = FOILS.find(f => f.id === book.foilStyle) || FOILS[0];
+
+        promptParts.push(`The photograph features exactly one closed monograph resting flat on the surface.`);
+        promptParts.push(`It is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}. The spine of the book is completely blank, smooth, and solid-toned cover material with zero printing, text, or markings.`);
+        promptParts.push(`Centered on the front cover, exactly one-third (1/3) of the way down from the top edge, in elegant, fine gold-embossed serif lettering, is the volume label: "${vol.label}: ${vol.title}"`);
         
-        let positionName = `Book ${idx + 1}`;
-        if (compositionArrangement === "stacked") {
-          positionName = idx === 0 ? "The top book" : idx === 1 ? "The second book down in the stack" : idx === 2 ? "The third book down in the stack" : "The bottom book of the stack";
-        } else {
-          positionName = idx === 0 ? "The leftmost book" : idx === 1 ? "The second book in the row" : idx === 2 ? "The third book in the row" : "The rightmost book";
-        }
-        
-        let bookDesc = `${positionName} is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}. `;
-        bookDesc += `Centered on its front cover, exactly one-third (1/3) of the way down from the top edge, in elegant, fine gold-embossed serif lettering, is the volume label: "${bVol.label}: ${bVol.title}". `;
-        bookDesc += `Centered near the bottom edge of its front cover is the elegant 'VV' monogram logo hallmark, deeply debossed and hot-stamped with ${bFoil.desc}`;
+        let logoDesc = `Centered near the bottom edge of the front cover is the elegant 'VV' calligraphic script monogram logo hallmark, deeply blind-debossed and hot-stamped with ${foil.desc}`;
         if (book.foilStyle !== "blind_deboss") {
-          bookDesc += `, with the uppercase brand name 'VELLUM & VESTIGE' cleanly hot-stamped in gold directly beneath the monogram.`;
+          logoDesc += `, with the uppercase serif brand name 'VELLUM & VESTIGE' cleanly hot-stamped in gold directly beneath the monogram`;
         } else {
-          bookDesc += `, with the uppercase brand name 'VELLUM & VESTIGE' cleanly blind-debossed directly beneath the monogram.`;
+          logoDesc += `, with the uppercase serif brand name 'VELLUM & VESTIGE' cleanly blind-debossed directly beneath the monogram`;
         }
-        promptParts.push(bookDesc);
-      });
-    } else if (state === "closed" && books.length === 1) {
-      // Single closed book (maintains base prompt layout rules exactly)
-      const book = books[0];
-      const selectedSwatch = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
-      const selectedMaterial = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
-      const vol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
-      const selectedFoil = FOILS.find(f => f.id === book.foilStyle) || FOILS[0];
-      
-      promptParts.push(`A premium 12"x9" portrait monograph published by Vellum & Vestige`);
-      promptParts.push(`featuring a slim, high-end, 60-page book block profile with clean-cut, perfectly stacked pages of refined medium-thickness and a smooth, even vertical paper block edge`);
-      promptParts.push(`bound in a pristine ${selectedSwatch.name} (${selectedSwatch.hex}) cover made of ${selectedMaterial.desc}`);
-      promptParts.push(`The spine of the book is completely blank, smooth, and solid-toned cover material with zero printing, text, or markings`);
-      promptParts.push(`Centered on the front cover, exactly one-third (1/3) of the way down from the top edge, in elegant, fine gold-embossed serif lettering, is the volume label: "${vol.label}: ${vol.title}"`);
-      
-      let logoDesc = `Centered near the bottom edge of the front cover is the elegant 'VV' calligraphic script monogram logo hallmark, deeply blind-debossed and hot-stamped with ${selectedFoil.desc}`;
-      if (book.foilStyle !== "blind_deboss") {
-        logoDesc += `, with the uppercase serif brand name 'VELLUM & VESTIGE' cleanly hot-stamped in gold directly beneath the monogram`;
+        promptParts.push(logoDesc);
+        promptParts.push(`The clean-cut, vertical book block edge underneath shows the luxurious ${sw.name} tone of the cover material (${sw.hex}) resting flat on the surface.`);
       } else {
-        logoDesc += `, with the uppercase serif brand name 'VELLUM & VESTIGE' cleanly blind-debossed directly beneath the monogram`;
+        // Multiple closed books stack/row
+        promptParts.push(`The photograph features exactly ${books.length} closed monographs in total.`);
+        if (compositionArrangement === "stacked") {
+          promptParts.push(`The monographs are stacked neatly in a single vertical pile on the surface, with their spines aligned and the top book's front cover fully visible.`);
+        } else {
+          promptParts.push(`The monographs are arranged side-by-side in an elegant overlapping row on the surface, showcasing the front cover of each book.`);
+        }
+
+        promptParts.push(`The spines of all the books in the collection are completely blank, smooth, and solid-toned cover material with zero printing, text, or markings.`);
+
+        books.forEach((book, idx) => {
+          const sw = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
+          const mat = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
+          const vol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
+          const foil = FOILS.find(f => f.id === book.foilStyle) || FOILS[0];
+          
+          let positionName = `Book ${idx + 1}`;
+          if (compositionArrangement === "stacked") {
+            positionName = idx === 0 ? "The top book" : idx === 1 ? "The second book down in the stack" : idx === 2 ? "The third book down in the stack" : "The bottom book of the stack";
+          } else {
+            positionName = idx === 0 ? "The leftmost book" : idx === 1 ? "The second book in the row" : idx === 2 ? "The third book in the row" : "The rightmost book";
+          }
+          
+          let bookDesc = `${positionName} is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}. `;
+          bookDesc += `Centered on its front cover, exactly one-third (1/3) of the way down from the top edge, in elegant, fine gold-embossed serif lettering, is the volume label: "${vol.label}: ${vol.title}". `;
+          bookDesc += `Centered near the bottom edge of its front cover is the elegant 'VV' monogram logo hallmark, deeply debossed and hot-stamped with ${foil.desc}`;
+          if (book.foilStyle !== "blind_deboss") {
+            bookDesc += `, with the uppercase brand name 'VELLUM & VESTIGE' cleanly hot-stamped in gold directly beneath the monogram.`;
+          } else {
+            bookDesc += `, with the uppercase brand name 'VELLUM & VESTIGE' cleanly blind-debossed directly beneath the monogram.`;
+          }
+          promptParts.push(bookDesc);
+        });
       }
-      promptParts.push(logoDesc);
     } else {
       // Open Spread configuration
-      const selectedTheme = OPEN_PHOTO_THEMES.find(t => t.id === photoTheme) || OPEN_PHOTO_THEMES[0];
-      const selectedPhotoStyle = PHOTO_STYLES.find(s => s.id === photoStyle) || PHOTO_STYLES[0];
-      
-      const paperDesc = paperType === "hahnemuhle"
-        ? "heavyweight textured museum-grade Hahnemühle matte art paper"
-        : "heavyweight semi-matte giclée photographic paper with a smooth matte finish";
-      
-      promptParts.push(`presented as an open spread monograph displaying exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight edges and precise white paper borders`);
-      promptParts.push(`The open monograph must be constructed with a premium, authentic lie-flat binding, where the pages lie completely flat and flush across the center seam with no warping. The spine of the book is completely integrated and flush with the cover, lying flat against the surface, and is never detached, angled, or separated from the cover structure.`);
-      promptParts.push(`The hardcover of the monograph is only marginally larger than the interior pages, extending by exactly 1/8 inch beyond the page block edge on all sides. The inside cover linings, endpapers, and all exposed cover edges are completely clean, solid-toned, and blank, containing absolutely no text, writing, printing, or markings whatsoever.`);
-      
-      // Select layout descriptions (at most two photos per spread)
+      if (books.length === 1) {
+        // Single open book
+        const book = books[0];
+        const sw = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
+        const mat = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
+
+        promptParts.push(`The photograph features exactly one open-spread monograph resting flat on the surface.`);
+        promptParts.push(`The monograph is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}.`);
+      } else {
+        // Multiple open books (NO closed books visible)
+        promptParts.push(`The photograph displays exactly ${books.length} separate open-spread monographs in total. There are no closed books in the image.`);
+        promptParts.push(`The open monographs are arranged side-by-side in an elegant, clean, curated overlapping layout flat on the surface, with each book open to reveal its own distinct interior pages.`);
+
+        books.forEach((book, idx) => {
+          const sw = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
+          const mat = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
+          const vol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
+          
+          promptParts.push(`Monograph ${idx + 1} (Volume ${idx + 1}: ${vol.title}) is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}, lying flat next to the others.`);
+        });
+      }
+
+      // Hardcover fit and inside cover blankness rules
+      promptParts.push(`The hardcover of each open monograph is only marginally larger than its interior pages, extending by exactly 1/8 inch beyond the page block edge on all sides. The inside cover linings, endpapers, and all exposed margins of the covers are completely clean, solid-toned, and blank, containing absolutely no text, writing, printing, or markings whatsoever.`);
+
+      // Authentic Lie-Flat Binding
+      promptParts.push(`All open monographs feature a premium, authentic lie-flat binding where the interior pages lie completely flat, smooth, and flush across the center gutter seam with no warping or separation. The spine of each book is completely integrated and flush with the cover structure, lying flat against the table surface with zero detachment or angling.`);
+
+      // 4. Interior paper description
+      promptParts.push(`The open spread displays exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight page edges and precise white margins.`);
+
+      // Layout configuration (Rule 4)
       let layoutDesc = "";
       if (spreadLayout === "standard") {
         layoutDesc = `The open spread features two distinct photographs, with one centered on the left page and one centered on the right page, each surrounded by a generous, clean, even white paper margin.`;
@@ -404,42 +438,27 @@ export default function App() {
       } else if (spreadLayout === "split_border") {
         layoutDesc = `The open spread features a Split-Border layout, where the photograph on the left page is framed by a crisp, thick white border, while the photograph on the right page bleeds completely off the outer edges of the page with no margins.`;
       }
-      
-      layoutDesc += ` The layout should feel organic, random, and unique: photos vary in size and cropping—some taking up 3/4 of a page, others taking up the entirety of a page, and one occasionally crossing the center gutter. Each individual page must contain at most one photo, and there are never more than two photos on the entire open spread. Under no circumstances should multiple pictures be printed on a single page.`;
-      
+
+      layoutDesc += ` The layout feels organic, random, and unique: photos vary in size and cropping—some taking up 3/4 of a page, others taking up the entirety of a page, and one occasionally crossing the center gutter. Each individual page must contain at most one photo, and there are never more than two photos on the entire open spread. Under no circumstances should multiple pictures be printed on a single page.`;
       promptParts.push(layoutDesc);
-      
+
+      // Photography Themes & Compliance (Rule 5 & negative constraints)
       promptParts.push(`On the pages is the professional, high-end editorial photography capturing ${selectedTheme.desc}`);
-      promptParts.push(`The photography is rendered with an intentional, happy, and heartwarming tone in ${selectedPhotoStyle.desc}`);
       promptParts.push(`The photographic imagery must feature only adults and strictly contain no children, kids, toddlers, or babies whatsoever`);
       promptParts.push(`The pages are completely clean, empty, and pristine, containing no printed text, words, labels, page numbers, or watermark text whatsoever`);
-      
-      if (books.length > 1) {
-        promptParts.push(`The photograph displays a premium collection of exactly ${books.length} separate open-spread monographs arranged side-by-side in a clean, curated overlapping layout on the surface`);
-        
-        books.forEach((book, idx) => {
-          const bSwatch = SWATCHES.find(s => s.id === book.swatch) || SWATCHES[0];
-          const bMaterial = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
-          const bVol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
-          
-          promptParts.push(`The ${idx === 0 ? "first" : idx === 1 ? "second" : idx === 2 ? "third" : "fourth"} open monograph (Volume ${idx + 1}: ${bVol.title}) is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}, lying flat next to the others with its pages open to reveal its own distinct editorial spread layout, its hardcover extending only marginally beyond the clean pages`);
-        });
-      } else {
-        const topBook = books[0];
-        const topSwatch = SWATCHES.find(s => s.id === topBook.swatch) || SWATCHES[0];
-        promptParts.push(`The thin book block edge underneath shows the luxurious ${topSwatch.name} tone of the cover material (${topSwatch.hex}) resting flat on the surface`);
-      }
     }
 
-    // Atmospheric Sunlight rules
+    // 5. Analog film / Black & White Color tone (Rule 5)
+    promptParts.push(`The photography is rendered with an intentional, happy, and heartwarming tone in ${selectedPhotoStyle.desc}`);
+
+    // 7. Lighting (Rule 7)
     promptParts.push(`Natural daylight-balanced illumination with ${selectedLighting.desc}`);
 
-    // Surface and environment
-    const selectedBackdrop = BACKDROPS.find(b => b.id === backdrop) || BACKDROPS[0];
+    // 6. Backdrop surface environment (Rule 6)
     const surfaceText = selectedBackdrop.id === "custom" ? customBackdrop : selectedBackdrop.desc;
     promptParts.push(`The volume is grounded upon a ${surfaceText}`);
-    
-    // Incorporate Styling Props
+
+    // 8. Styling Props (Rule 8)
     if (includeProps) {
       const selectedProp = PROPS.find(p => p.id === stylingProp) || PROPS[0];
       const propText = selectedProp.id === "custom" ? customProps : selectedProp.desc;
@@ -448,7 +467,7 @@ export default function App() {
       }
     }
 
-    // Aesthetic style
+    // 9. Fine Tuning Aesthetics
     if (aestheticStyle) {
       promptParts.push(`${aestheticStyle}`);
     }
@@ -590,7 +609,7 @@ export default function App() {
         validAspectRatio = "4:3";
       }
 
-      const modelsToTry = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"];
+      const modelsToTry = ["gemini-3.1-flash-image", "gemini-2.5-flash-image"];
       let imageBase64 = null;
       let lastError = null;
 
