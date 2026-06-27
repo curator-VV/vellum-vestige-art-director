@@ -373,6 +373,7 @@ export default function App() {
       
       promptParts.push(`presented as an open spread monograph displaying exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight edges and precise white paper borders`);
       promptParts.push(`The open monograph must be constructed with a premium, authentic lie-flat binding, where the pages lie completely flat and flush across the center seam with no warping. The spine of the book is completely integrated and flush with the cover, lying flat against the surface, and is never detached, angled, or separated from the cover structure.`);
+      promptParts.push(`The hardcover of the monograph is only marginally larger than the interior pages, extending by exactly 1/8 inch beyond the page block edge on all sides. The inside cover linings, endpapers, and all exposed cover edges are completely clean, solid-toned, and blank, containing absolutely no text, writing, printing, or markings whatsoever.`);
       
       // Select layout descriptions (at most two photos per spread)
       let layoutDesc = "";
@@ -421,7 +422,7 @@ export default function App() {
           const bMaterial = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
           const bVol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
           
-          promptParts.push(`The ${idx === 0 ? "first" : idx === 1 ? "second" : idx === 2 ? "third" : "fourth"} open monograph (Volume ${idx + 1}: ${bVol.title}) is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}, lying flat next to the others with its pages open to reveal its own distinct editorial spread layout`);
+          promptParts.push(`The ${idx === 0 ? "first" : idx === 1 ? "second" : idx === 2 ? "third" : "fourth"} open monograph (Volume ${idx + 1}: ${bVol.title}) is bound in a pristine ${bSwatch.name} (${bSwatch.hex}) cover made of ${bMaterial.desc}, lying flat next to the others with its pages open to reveal its own distinct editorial spread layout, its hardcover extending only marginally beyond the clean pages`);
         });
       } else {
         const topBook = books[0];
