@@ -25,6 +25,32 @@ async function startServer() {
   // Serve generated image assets statically
   app.use("/generations", express.static(generationsDir));
 
+  // API Route: Get Config (exposes API key securely for frontend generation)
+  app.get("/api/config", (req, res) => {
+    res.json({ apiKey: process.env.GEMINI_API_KEY });
+  });
+
+  // API Route: Save generated image base64 bytes to disk
+  app.post("/api/save-generated-image", async (req, res) => {
+    try {
+      const { imageBase64 } = req.body;
+      if (!imageBase64) {
+        return res.status(400).json({ error: "Missing image data" });
+      }
+
+      const filename = `gen_${Date.now()}_${Math.floor(Math.random() * 100000)}.png`;
+      const filePath = path.join(generationsDir, filename);
+      const imageBuffer = Buffer.from(imageBase64, "base64");
+      await fs.promises.writeFile(filePath, imageBuffer);
+      
+      const imageUrl = `/generations/${filename}`;
+      return res.json({ success: true, imageUrl });
+    } catch (error: any) {
+      console.error("Error saving image:", error);
+      return res.status(500).json({ error: "Save Error", message: error.message });
+    }
+  });
+
   // API Route: Image Generation using gemini-2.5-flash-image
   app.post("/api/generate-image", async (req, res) => {
     try {

@@ -570,32 +570,103 @@ export default function App() {
     const finalPrompt = getCompiledPrompt();
     
     try {
-      const response = await fetch("/api/generate-image", {
+      // 1. Get the API Key from our backend configuration endpoint
+      const configRes = await fetch("/api/config");
+      const configData = await configRes.json();
+      const apiKey = configData.apiKey;
+      
+      if (!apiKey) {
+        throw new Error("Missing API Key. Please set your GEMINI_API_KEY environment variable in Render.");
+      }
+
+      // Map aspect ratio for Gemini REST API
+      let validAspectRatio = "1:1";
+      if (selectedPlatform.ratio === "4:5") {
+        validAspectRatio = "3:4";
+      } else if (selectedPlatform.ratio === "9:16") {
+        validAspectRatio = "9:16";
+      } else if (selectedPlatform.ratio === "16:9") {
+        validAspectRatio = "16:9";
+      } else if (selectedPlatform.ratio === "4:3") {
+        validAspectRatio = "4:3";
+      }
+
+      const modelsToTry = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"];
+      let imageBase64 = null;
+      let lastError = null;
+
+      // 2. Query Gemini API directly from the browser (uses client IP, staying on free tier!)
+      for (const modelName of modelsToTry) {
+        try {
+          console.log(`[Client Engine] Requesting image generation from browser using model: ${modelName}`);
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: finalPrompt }] }],
+              generationConfig: {
+                imageConfig: {
+                  aspectRatio: validAspectRatio
+                }
+              }
+            })
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error?.message || `Model ${modelName} returned status ${response.status}`);
+          }
+
+          if (data.candidates && data.candidates[0]?.content?.parts) {
+            for (const part of data.candidates[0].content.parts) {
+              if (part.inlineData) {
+                imageBase64 = part.inlineData.data;
+                break;
+              }
+            }
+          }
+
+          if (imageBase64) {
+            console.log(`[Client Engine] Successfully generated image from browser using model: ${modelName}`);
+            break;
+          }
+        } catch (error: any) {
+          console.error(`[Client Engine] Error with model ${modelName}:`, error.message || error);
+          lastError = error;
+        }
+      }
+
+      if (!imageBase64) {
+        throw new Error(lastError?.message || "No image data returned from any Google Gemini model attempts.");
+      }
+
+      // 3. Save the base64 image data back to the server to store on our persistent disk
+      const saveResponse = await fetch("/api/save-generated-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          prompt: finalPrompt,
-          aspectRatio: selectedPlatform.ratio
+          imageBase64: imageBase64
         })
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || data.error || "Failed to generate image.");
+
+      const saveData = await saveResponse.json();
+      if (!saveResponse.ok) {
+        throw new Error(saveData.error?.message || saveData.error || "Failed to save generated image on server.");
       }
-      
-      if (data.imageUrl) {
-        setGeneratedImageUrl(data.imageUrl);
+
+      if (saveData.imageUrl) {
+        setGeneratedImageUrl(saveData.imageUrl);
         
         // Add to history list
         const newItem: HistoryItem = {
           id: Math.random().toString(36).substring(2, 9),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           prompt: finalPrompt,
-          imageUrl: data.imageUrl,
+          imageUrl: saveData.imageUrl,
           settings: {
             platform,
             swatch,
@@ -618,7 +689,7 @@ export default function App() {
             compositionArrangement
           }
         };
-
+        
         const updatedHistory = [newItem, ...historyList].slice(0, 12); // Limit to 12 history items
         setHistoryList(updatedHistory);
         localStorage.setItem("vv_generation_history", JSON.stringify(updatedHistory));
