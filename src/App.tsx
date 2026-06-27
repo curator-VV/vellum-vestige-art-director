@@ -388,7 +388,7 @@ export default function App() {
         promptParts.push(`The monograph is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}.`);
       } else {
         // Multiple open books (NO closed books visible)
-        promptParts.push(`The photograph displays exactly ${books.length} separate open-spread monographs in total. There are no closed books in the image.`);
+        promptParts.push(`The photograph displays exactly ${books.length} separate open-spread monographs in total. There are no closed books, no closed covers, and no closed volume stacks in the entire image; only the flat open-spread pages are visible.`);
         promptParts.push(`The open monographs are arranged side-by-side in an elegant, clean, curated overlapping layout flat on the surface, with each book open to reveal its own distinct interior pages.`);
 
         books.forEach((book, idx) => {
@@ -396,7 +396,7 @@ export default function App() {
           const mat = MATERIALS.find(m => m.id === book.material) || MATERIALS[0];
           const vol = VOLUMES.find(v => v.id === book.volume) || VOLUMES[0];
           
-          promptParts.push(`Monograph ${idx + 1} (Volume ${idx + 1}: ${vol.title}) is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}, lying flat next to the others.`);
+          promptParts.push(`Monograph ${idx + 1} (Volume ${idx + 1}: ${vol.title}) is bound in a pristine ${sw.name} (${sw.hex}) cover made of ${mat.desc}, lying flat next to the others with absolutely no closed covers, closed spines, or back covers showing.`);
         });
       }
 
