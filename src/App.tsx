@@ -383,6 +383,24 @@ export default function App() {
         layoutDesc = `The open spread features a single photograph that takes up the entirety of the right page in a full-bleed crop, while the left page remains completely blank, empty, and clean white paper.`;
       } else if (spreadLayout === "panoramic") {
         layoutDesc = `The open spread features a single panoramic photograph that spans continuously across both pages, crossing the center page fold gutter.`;
+      } else if (spreadLayout === "equal_halves") {
+        layoutDesc = `The open spread features an Equal Halves Split layout, where each page displays one identical-size, vertically-oriented photograph (two vertical 4x6s side by side), offering a perfectly symmetrical 50/50 visual weight split.`;
+      } else if (spreadLayout === "top_bottom_stack") {
+        layoutDesc = `The open spread features a Top & Bottom Stacking layout, where two wide panoramic horizontal photographs are stacked vertically across both pages, spanning the gutter, with their visual elements mirroring each other cleanly.`;
+      } else if (spreadLayout === "center_mirror") {
+        layoutDesc = `The open spread features a Center-Aligned Mirror layout. The two photographs are placed on opposite sides of the seam, with the left photo offset toward the top-half of the left page, and the right photo offset toward the bottom-half of the right page, creating a balanced, diagonally offset mirror effect.`;
+      } else if (spreadLayout === "hv_contrast") {
+        layoutDesc = `The open spread features a Horizontal/Vertical Contrast layout, with a wide landscape-oriented photograph on the left page and a tall portrait-oriented photograph on the right page, drawing the viewer's eye from a wide setting to an emotional close-up.`;
+      } else if (spreadLayout === "focus_context") {
+        layoutDesc = `The open spread features a Focus & Context layout: a single large 'hero' photograph dominates 75% of the spread (spanning across the gutter onto the right page), while a much smaller detail photograph is tucked into the bottom-left corner with ample clean white negative space surrounding it.`;
+      } else if (spreadLayout === "foreground_background") {
+        layoutDesc = `The open spread features a Foreground/Background Pairing layout, with a wide environmental wide-shot on the left page and a highly detailed close-up texture or character study photo on the right page.`;
+      } else if (spreadLayout === "seamless_panoramic") {
+        layoutDesc = `The open spread features a Seamless Panoramic layout. A single large photograph physically bleeds off all outer edges of both pages, spanning continuously across the central seam with absolutely no white borders or margins.`;
+      } else if (spreadLayout === "double_mat") {
+        layoutDesc = `The open spread features a Double Mat layout. Two identical, exact-size photographs are perfectly centered on the left and right pages, each framed by a very wide, clean, identical white paper matting margin.`;
+      } else if (spreadLayout === "split_border") {
+        layoutDesc = `The open spread features a Split-Border layout, where the photograph on the left page is framed by a crisp, thick white border, while the photograph on the right page bleeds completely off the outer edges of the page with no margins.`;
       }
       
       layoutDesc += ` The layout should feel organic, random, and unique: photos vary in size and cropping—some taking up 3/4 of a page, others taking up the entirety of a page, and one occasionally crossing the center gutter. Each individual page must contain at most one photo, and there are never more than two photos on the entire open spread. Under no circumstances should multiple pictures be printed on a single page.`;
@@ -1075,6 +1093,15 @@ export default function App() {
                       <option value="asymmetric">Asymmetric Dual (Small Left, Large Right)</option>
                       <option value="full_bleed_right">Single Page Full-Bleed (Right Page Only)</option>
                       <option value="panoramic">Panoramic Gutter-Span (Crosses Gutter)</option>
+                      <option value="equal_halves">Equal Halves Split (50/50 Symmetrical Split)</option>
+                      <option value="top_bottom_stack">Top & Bottom Stacking (Stacked Horizontal Images)</option>
+                      <option value="center_mirror">Center-Aligned Mirror (Left-Right Vertically Offset)</option>
+                      <option value="hv_contrast">Horizontal / Vertical Contrast (Landscape & Portrait Contrast)</option>
+                      <option value="focus_context">Focus & Context (75% Spanning Hero & Small Corner Detail)</option>
+                      <option value="foreground_background">Foreground / Background (Wide Left & Close-up Right)</option>
+                      <option value="seamless_panoramic">Seamless Panoramic (Full-Bleed Spanning Spread)</option>
+                      <option value="double_mat">Double Mat (Centered Photos with Wide Borders)</option>
+                      <option value="split_border">Split-Border Look (One Bordered Photo, One Full-Bleed)</option>
                     </select>
                   </div>
                 </div>
@@ -1459,6 +1486,247 @@ export default function App() {
                                   <svg className="w-10 h-10 opacity-30 text-stone-600 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                   </svg>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "equal_halves" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[72%] h-[82%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-50 mix-blend-multiply z-10`}></div>
+                                    <svg className="w-5 h-5 opacity-30 text-stone-600 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className="w-[72%] h-[82%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-50 mix-blend-multiply z-10`}></div>
+                                    <svg className="w-5 h-5 opacity-30 text-stone-600 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "top_bottom_stack" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                </div>
+
+                                <div className="absolute left-[10%] right-[10%] top-[12%] h-[32%] bg-stone-100 border border-stone-200/60 shadow-sm z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-40 mix-blend-multiply z-10`}></div>
+                                </div>
+                                <div className="absolute left-[10%] right-[10%] bottom-[12%] h-[32%] bg-stone-100 border border-stone-200/60 shadow-sm z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-40 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "center_mirror" && (
+                              <>
+                                {/* Left Page - Offset Top */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="absolute left-[18%] w-[64%] h-[48%] top-[12%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                {/* Right Page - Offset Bottom */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className="absolute right-[18%] w-[64%] h-[48%] bottom-[12%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "hv_contrast" && (
+                              <>
+                                {/* Left Page - Horizontal */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[85%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-45 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                {/* Right Page - Vertical */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className="w-[62%] h-[82%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-45 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "focus_context" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  {/* Small Detail Photo */}
+                                  <div className="absolute left-[8%] bottom-[10%] w-[32%] h-[32%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center z-10">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-35 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                </div>
+
+                                {/* Hero Gutter Spanner */}
+                                <div className="absolute left-[38%] right-[8%] top-[10%] bottom-[10%] bg-stone-100 border border-stone-200/60 shadow-lg z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-45 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "foreground_background" && (
+                              <>
+                                {/* Left Page - Wide Environmental */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[86%] h-[60%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                {/* Right Page - Close-up texture */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className="w-[60%] h-[74%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-45 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "seamless_panoramic" && (
+                              <>
+                                {/* Left Background Page */}
+                                <div className="w-1/2 h-full relative border-r border-stone-100 overflow-hidden">
+                                  <div className="absolute inset-0 bg-stone-100"></div>
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-55 mix-blend-multiply z-10`}></div>
+                                </div>
+                                {/* Right Background Page */}
+                                <div className="w-1/2 h-full relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-stone-100"></div>
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-55 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "double_mat" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[56%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className="w-[56%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "split_border" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[74%] h-[78%] bg-white border border-stone-300 shadow-md relative p-2 pb-6 flex flex-col justify-between">
+                                    <div className="w-full h-[82%] bg-stone-100 relative overflow-hidden flex items-center justify-center">
+                                      <div className={`absolute inset-0 ${
+                                        photoStyle === "bw" 
+                                          ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                          : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                      } opacity-40 mix-blend-multiply z-10`}></div>
+                                    </div>
+                                    <div className="w-full h-2 bg-stone-100/20"></div>
+                                  </div>
+                                </div>
+
+                                <div className="w-1/2 h-full bg-stone-100 relative overflow-hidden flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-55 mix-blend-multiply z-10`}></div>
                                 </div>
                               </>
                             )}
