@@ -221,7 +221,7 @@ export default function App() {
   const [stylingProp, setStylingProp] = useState("eucalyptus");
   const [customProps, setCustomProps] = useState("a single dried silver dollar eucalyptus branch casting a soft shadow");
   const [includeProps, setIncludeProps] = useState(true);
-  const [aestheticStyle, setAestheticStyle] = useState("Quiet luxury editorial, high-end design journal mood, minimalist and pure");
+  const [aestheticStyle, setAestheticStyle] = useState("Quiet luxury editorial, high-end design journal mood, minimalist and pure; must look photorealistic and not AI-generated");
   
   // Openspread controls
   const [photoTheme, setPhotoTheme] = useState("family");
