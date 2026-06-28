@@ -373,7 +373,7 @@ export default function App() {
     // 1. Sizing and Book block geometry (Rule 1 & Rule 9 update)
     // Every book is strictly 12" vertical height by 9" width. Slim 60 pages creates a 1.25" total thickness.
     const sizeConstraints = `Each monograph is formatted in a vertical portrait orientation measuring exactly 12 inches tall by 9 inches wide. The monograph features a slim, premium 60-page book block profile, resulting in a clean, high-end spine and block thickness of precisely 1.25 inches.`;
-    const flatOrientation = `The monograph book must lie completely flat, horizontal, and flush against the surface on which it is resting. Under no circumstances should the book be shown standing upright, propped up, tilted at an angle, open-standing, or leaning. It must rest 100% flat on the tabletop or backdrop surface with both left and right cover boards lying completely parallel and flat against the surface, showing only a direct top-down or slight 45-degree angle view of the flat book.`;
+    const flatOrientation = `The monograph book must rest completely flat and flush against the horizontal surface. Under no circumstances should the book be shown standing upright, propped up, vertically tilted, or leaning. However, the camera angle and the book's rotational placement should feel organic and artistic: the book should be rotated at a natural diagonal angle (e.g. 15 to 30 degrees) relative to the camera frame, creating a dynamic, offset composition. The camera captures this flat-lying book from a high-angle, three-quarters view, or a slightly angled flat-lay perspective rather than a perfectly straight top-down square shot.`;
     promptParts.push(sizeConstraints);
     promptParts.push(flatOrientation);
 
@@ -463,7 +463,7 @@ export default function App() {
       promptParts.push(`The hardcover of each open monograph is only marginally larger than its interior pages, extending by exactly 1/8 inch beyond the page block edge on all sides. The inside cover linings, endpapers, and all exposed margins of the covers are completely clean, solid-toned, and blank, containing absolutely no text, writing, printing, or markings whatsoever.`);
 
       // Authentic Lie-Flat Binding
-      promptParts.push(`All open monographs feature a premium, authentic lie-flat binding where the interior pages lie completely flat, smooth, and flush across the center gutter seam with no warping or separation. The spine of each book is completely integrated and flush with the cover structure, lying flat against the table surface with zero detachment, vertical angling, or stand-up posture. The entire book is resting perfectly flat on the horizontal surface, showing only the open flat pages from a top-down or 45-degree angle.`);
+      promptParts.push(`All open monographs feature a premium, authentic lie-flat binding where the interior pages lie completely flat, smooth, and flush across the center gutter seam with no warping or separation. The spine of each book is completely integrated and flush with the cover structure, lying flat against the table surface with zero detachment, vertical angling, or stand-up posture. The entire book is resting flat on the horizontal surface, captured at a beautiful, slightly rotated organic angle for an editorial layout.`);
 
       // 4. Interior paper description
       promptParts.push(`The open spread displays exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight page edges and precise white margins.`);
