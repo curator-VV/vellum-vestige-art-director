@@ -54,12 +54,21 @@ const PLATFORMS = [
 ];
 
 const OPEN_PHOTO_THEMES = [
-  { id: "family", name: "Family Bonds", desc: "Heartwarming scenes of family connections and gatherings" },
+  { id: "family", name: "Family Bonds", desc: "Heartwarming scenes of family connections, warm adult gatherings, and heartfelt interactions" },
   { id: "relationships", name: "Profound Relationships", desc: "Emotional portraits of couples or dear friends" },
   { id: "beginnings", name: "New Beginnings", desc: "Capturing hope, fresh starts, and intimate life shifts" },
   { id: "homes", name: "Welcoming New Homes", desc: "Sunlit interiors, architectural details, and homeliness" },
   { id: "grandparents", name: "Grandparents Sharing Stories", desc: "Generational storytelling, rich textures, and wisdom" },
-  { id: "pets", name: "Household Pets", desc: "Intimate and endearing frames of beloved pets in home light" }
+  { id: "pets", name: "Household Pets", desc: "Intimate and endearing frames of beloved pets in home light" },
+  { id: "vacations", name: "Vacation Escapes", desc: "Sunny, relaxed moments of adults enjoying luxurious retreats and peaceful resort getaways" },
+  { id: "travel", name: "Wanderlust Travel", desc: "Breathtaking travel moments, walking through ancient European streets, exploring markets, and grand architectures" },
+  { id: "year_review", name: "Year-in-Review", desc: "A seasonal journey of milestone moments, celebrations, quiet achievements, and beautiful memories throughout the year" },
+  { id: "hobbies", name: "Hobbies & Craft", desc: "Adults engaged in passionate craft, pottery, sketching, gardening, sailing, or playing classic musical instruments" },
+  { id: "wedding", name: "Weddings & Elopements", desc: "Elegant, timeless editorial wedding portraits, candid emotional glances, and sophisticated celebration details" },
+  { id: "nature", name: "Nature & Landscapes", desc: "Majestic mountains, ocean waves, misty forests, and detailed close-ups of natural geological forms" },
+  { id: "architecture", name: "Architecture & Design", desc: "Minimalist concrete buildings, high-end interior styling, organic textures, and play of light and shadow on walls" },
+  { id: "culinary", name: "Culinary & Food Art", desc: "Artisanal food preparation, rustic tablescapes, pouring wine, and beautifully lit organic ingredients" },
+  { id: "fine_art", name: "Fine Art Portfolio", desc: "Conceptual artistic portraiture, dramatic silhouettes, abstract shadows, and high-fashion editorial captures" }
 ];
 
 const PHOTO_STYLES = [
@@ -104,10 +113,53 @@ const LIGHTINGS = [
 
 // Upgraded modern styling props
 const PROPS = [
+  // Original
   { id: "eucalyptus", name: "Dried Eucalyptus (Botanical)", desc: "a single dried silver dollar eucalyptus branch casting a soft shadow" },
   { id: "brass_bookmark", name: "Solid Brass Bookmark (Modern Decor)", desc: "a raw, minimal solid brass bookmark resting casually near the book" },
   { id: "ceramic_cup", name: "Ceramic Cup (Tactile Lifestyle)", desc: "a hand-thrown raw stoneware ceramic cup on a rough linen coaster" },
   { id: "travertine_block", name: "Travertine Block (Architectural)", desc: "a small geometric block of raw travertine stone casting a hard diagonal shadow" },
+  
+  // Geometric Risers & Blocks
+  { id: "geo_risers", name: "Geometric Clay Risers", desc: "a pair of matte-finished plaster geometric risers and cylinders supporting the scene's aesthetic" },
+  { id: "stone_block", name: "Polished Travertine Cylinder", desc: "a minimal polished travertine stone block column resting next to the monograph" },
+  
+  // Textiles & Fabrics
+  { id: "linen_fabric", name: "Draped Raw Silk Fabric", desc: "a piece of loosely draped, neutral-toned raw silk fabric with soft organic folds reflecting light" },
+  { id: "linen_napkin", name: "Wrinkled Linen Napkin", desc: "a soft, frayed-edge neutral wrinkled linen napkin lying elegantly beside the book" },
+  
+  // Ceramics / Glassware
+  { id: "glass_vase", name: "Ribbed Glass Vase", desc: "a minimal ribbed clear glass vase catching sunlight and refracting it onto the tabletop" },
+  { id: "stoneware_bowl", name: "Stoneware Incense Bowl", desc: "a small hand-pinched speckled stoneware incense bowl with a tiny trail of smoke" },
+  
+  // Flowers & Botanicals
+  { id: "white_tulips", name: "White Tulips in Vase", desc: "a couple of minimal white tulips drooping elegantly from a ceramic bud vase" },
+  { id: "magnolia_branch", name: "Magnolia Branch", desc: "a fresh green magnolia branch with a single closed white blossom casting a soft shape" },
+  
+  // Trays
+  { id: "wood_tray", name: "Carved Walnut Tray", desc: "a low-profile carved solid walnut decorative tray holding the book" },
+  { id: "marble_tray", name: "Honed Marble Platter", desc: "a sleek, thin slab tray of white Carrara marble with grey veins" },
+  
+  // Twinkle Lights
+  { id: "fairy_lights", name: "Warm Fairy Lights", desc: "a delicate strand of micro copper wire fairy lights glowing with a warm soft gold light in the background" },
+  
+  // Candles & Matches
+  { id: "soy_candle", name: "Beeswax Candle", desc: "a tall, cream-colored beeswax taper candle in a solid brass holder, lit with a tiny warm flame" },
+  
+  // Mirrors
+  { id: "pocket_mirror", name: "Arch Brass Mirror", desc: "a small arch-shaped brass pocket mirror reflecting a sliver of sunlit window in the background" },
+  
+  // Electronics
+  { id: "vintage_camera", name: "Minimalist Classic Rangefinder", desc: "a vintage classic rangefinder film camera in matte black and silver resting nearby" },
+  
+  // Water Elements
+  { id: "water_droplets", name: "Water Reflection Bowl", desc: "a wide, shallow dark stone bowl filled with water showing subtle, calm ripples and sun reflections" },
+  
+  // Seasonal
+  { id: "autumn_leaves", name: "Autumn Botanical (Seasonal)", desc: "a few dried golden-amber gingko leaves resting delicately next to the book cover" },
+  { id: "pinecone_spruce", name: "Spruce & Pinecone (Seasonal)", desc: "a single small pinecone and a small sprig of fresh green spruce resting beside the binding" },
+  { id: "cherry_blossom", name: "Cherry Blossom (Seasonal)", desc: "a delicate spring cherry blossom branch with small pale pink flowers" },
+  
+  // None / Custom
   { id: "none", name: "No Props", desc: "" },
   { id: "custom", name: "Custom Styling Prop...", desc: "" }
 ];
@@ -321,7 +373,9 @@ export default function App() {
     // 1. Sizing and Book block geometry (Rule 1 & Rule 9 update)
     // Every book is strictly 12" vertical height by 9" width. Slim 60 pages creates a 1.25" total thickness.
     const sizeConstraints = `Each monograph is formatted in a vertical portrait orientation measuring exactly 12 inches tall by 9 inches wide. The monograph features a slim, premium 60-page book block profile, resulting in a clean, high-end spine and block thickness of precisely 1.25 inches.`;
+    const flatOrientation = `The monograph book must lie completely flat, horizontal, and flush against the surface on which it is resting. Under no circumstances should the book be shown standing upright, propped up, tilted at an angle, open-standing, or leaning. It must rest 100% flat on the tabletop or backdrop surface with both left and right cover boards lying completely parallel and flat against the surface, showing only a direct top-down or slight 45-degree angle view of the flat book.`;
     promptParts.push(sizeConstraints);
+    promptParts.push(flatOrientation);
 
     // 2. State & Quantity Rules (Rule 3)
     if (state === "closed") {
@@ -409,7 +463,7 @@ export default function App() {
       promptParts.push(`The hardcover of each open monograph is only marginally larger than its interior pages, extending by exactly 1/8 inch beyond the page block edge on all sides. The inside cover linings, endpapers, and all exposed margins of the covers are completely clean, solid-toned, and blank, containing absolutely no text, writing, printing, or markings whatsoever.`);
 
       // Authentic Lie-Flat Binding
-      promptParts.push(`All open monographs feature a premium, authentic lie-flat binding where the interior pages lie completely flat, smooth, and flush across the center gutter seam with no warping or separation. The spine of each book is completely integrated and flush with the cover structure, lying flat against the table surface with zero detachment or angling.`);
+      promptParts.push(`All open monographs feature a premium, authentic lie-flat binding where the interior pages lie completely flat, smooth, and flush across the center gutter seam with no warping or separation. The spine of each book is completely integrated and flush with the cover structure, lying flat against the table surface with zero detachment, vertical angling, or stand-up posture. The entire book is resting perfectly flat on the horizontal surface, showing only the open flat pages from a top-down or 45-degree angle.`);
 
       // 4. Interior paper description
       promptParts.push(`The open spread displays exactly 60 pages of refined medium-thickness ${paperDesc} with perfectly clean-cut, straight page edges and precise white margins.`);
