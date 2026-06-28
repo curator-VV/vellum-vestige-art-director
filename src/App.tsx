@@ -421,7 +421,7 @@ export default function App() {
       } else if (spreadLayout === "asymmetric") {
         layoutDesc = `The open spread features an asymmetrical layout with a smaller portrait-oriented photograph centered on the left page and a larger landscape-oriented photograph centered on the right page, creating an elegant editorial contrast.`;
       } else if (spreadLayout === "full_bleed_right") {
-        layoutDesc = `The open spread features a single photograph that takes up the entirety of the right page in a full-bleed crop, while the left page remains completely blank, empty, and clean white paper.`;
+        layoutDesc = `The open spread features an Asymmetric Full Bleed Pair layout: the left page displays a centered landscape-oriented photograph filling approximately 90% of the page width with a clean white paper margin, while the right page displays a full-bleed photograph that covers the entirety of the right page from edge to edge with zero margins.`;
       } else if (spreadLayout === "panoramic") {
         layoutDesc = `The open spread features a single panoramic photograph that spans continuously across both pages, crossing the center page fold gutter.`;
       } else if (spreadLayout === "equal_halves") {
@@ -429,22 +429,32 @@ export default function App() {
       } else if (spreadLayout === "top_bottom_stack") {
         layoutDesc = `The open spread features a Top & Bottom Stacking layout, where two wide panoramic horizontal photographs are stacked vertically across both pages, spanning the gutter, with their visual elements mirroring each other cleanly.`;
       } else if (spreadLayout === "center_mirror") {
-        layoutDesc = `The open spread features a Center-Aligned Mirror layout. The two photographs are placed on opposite sides of the seam, with the left photo offset toward the top-half of the left page, and the right photo offset toward the bottom-half of the right page, creating a balanced, diagonally offset mirror effect.`;
+        layoutDesc = `The open spread features a Center-Aligned Mirror layout. The two large photographs are placed on opposite sides of the seam, with the left photo offset toward the top-half of the left page (filling 80% of the page area), and the right photo offset toward the bottom-half of the right page (filling 80% of the page area), creating a balanced, large diagonally offset mirror effect with minimal white space.`;
       } else if (spreadLayout === "hv_contrast") {
-        layoutDesc = `The open spread features a Horizontal/Vertical Contrast layout, with a wide landscape-oriented photograph on the left page and a tall portrait-oriented photograph on the right page, drawing the viewer's eye from a wide setting to an emotional close-up.`;
+        layoutDesc = `The open spread features a Horizontal/Vertical Contrast layout: a wide landscape-oriented photograph on the left page (filling 85% of the page) and a tall portrait-oriented photograph on the right page (filling 85% of the page), drawing the eye from a wide scene to a close-up with minimal white space.`;
       } else if (spreadLayout === "focus_context") {
-        layoutDesc = `The open spread features a Focus & Context layout: a single large 'hero' photograph dominates 75% of the spread (spanning across the gutter onto the right page), while a much smaller detail photograph is tucked into the bottom-left corner with ample clean white negative space surrounding it.`;
+        layoutDesc = `The open spread features a Focus & Context layout: a single large hero photograph dominates 75% of the spread (spanning across the gutter onto the right page), while a medium-sized detail photograph (enlarged by 50% to fill the bottom-left corner zone with comfortable margins) is tucked into the bottom-left corner with clean negative space surrounding it.`;
       } else if (spreadLayout === "foreground_background") {
-        layoutDesc = `The open spread features a Foreground/Background Pairing layout, with a wide environmental wide-shot on the left page and a highly detailed close-up texture or character study photo on the right page.`;
+        layoutDesc = `The open spread features a Foreground/Background Pairing layout: a large environmental wide-shot on the left page (enlarged by 25% to fill 85% of the page) and a highly detailed close-up character study on the right page.`;
       } else if (spreadLayout === "seamless_panoramic") {
         layoutDesc = `The open spread features a Seamless Panoramic layout. A single large photograph physically bleeds off all outer edges of both pages, spanning continuously across the central seam with absolutely no white borders or margins.`;
       } else if (spreadLayout === "double_mat") {
-        layoutDesc = `The open spread features a Double Mat layout. Two identical, exact-size photographs are perfectly centered on the left and right pages, each framed by a very wide, clean, identical white paper matted margin.`;
+        layoutDesc = `The open spread features a Double Mat layout: two identical, large photographs are perfectly centered on the left and right pages, each enlarged by 30% to dominate its page, leaving only narrow, refined white paper matted borders.`;
       } else if (spreadLayout === "split_border") {
-        layoutDesc = `The open spread features a Split-Border layout, where the photograph on the left page is framed by a crisp, thick white border, while the photograph on the right page bleeds completely off the outer edges of the page with no margins.`;
+        layoutDesc = `The open spread features a split layout: the photograph on the left page has no borders and is enlarged by 30% to fill 90% of the page, while the photograph on the right page is full-bleed, extending completely off all outer edges with zero margins.`;
+      } else if (spreadLayout === "double_full_bleed") {
+        layoutDesc = `The open spread features a Double Full Bleed layout: two separate photographs, each taking up the absolute entirety of its page in a full-bleed crop, meeting cleanly at the center seam with zero white borders.`;
+      } else if (spreadLayout === "panoramic_cross_multi") {
+        layoutDesc = `The open spread features a Crossing Landscape & Dual Portrait layout: the left page features a large landscape photograph that bleeds across the center gutter seam by exactly 10% onto the right page. Immediately next to it is a small vertical white gap, followed by two portrait-oriented photographs side-by-side on the right page, separated by the same small gap.`;
+      } else if (spreadLayout === "triptych_grid") {
+        layoutDesc = `The open spread features a Triptych Storyboard Grid layout: the left page displays a single tall portrait-oriented photograph (filling 85% of the page), while the right page displays two stacked horizontal landscape-oriented photographs separated by a narrow horizontal gap, minimizing white space.`;
       }
 
-      layoutDesc += ` The layout feels organic, random, and unique: photos vary in size and cropping—some taking up 3/4 of a page, others taking up the entirety of a page, and one occasionally crossing the center gutter. Each individual page must contain at most one photo, and there are never more than two photos on the entire open spread. Under no circumstances should multiple pictures be printed on a single page.`;
+      if (spreadLayout !== "panoramic_cross_multi" && spreadLayout !== "triptych_grid") {
+        layoutDesc += ` The layout feels organic, random, and unique: photos vary in size and cropping—some taking up 3/4 of a page, others taking up the entirety of a page, and one occasionally crossing the center gutter. Each individual page must contain at most one photo, and there are never more than two photos on the entire open spread. Under no circumstances should multiple pictures be printed on a single page.`;
+      } else {
+        layoutDesc += ` The layout feels highly professional, balanced, and editorial, with clean alignments, exact vertical gaps, and crisp straight borders.`;
+      }
       promptParts.push(layoutDesc);
 
       // Photography Themes & Compliance (Rule 5 & negative constraints)
@@ -1220,17 +1230,20 @@ export default function App() {
                     >
                       <option value="standard">Standard Double (1 Left, 1 Right)</option>
                       <option value="asymmetric">Asymmetric Dual (Small Left, Large Right)</option>
-                      <option value="full_bleed_right">Single Page Full-Bleed (Right Page Only)</option>
+                      <option value="full_bleed_right">Asymmetric Full Bleed Pair (Landscape Left, Full Bleed Right)</option>
                       <option value="panoramic">Panoramic Gutter-Span (Crosses Gutter)</option>
                       <option value="equal_halves">Equal Halves Split (50/50 Symmetrical Split)</option>
                       <option value="top_bottom_stack">Top & Bottom Stacking (Stacked Horizontal Images)</option>
                       <option value="center_mirror">Center-Aligned Mirror (Left-Right Vertically Offset)</option>
                       <option value="hv_contrast">Horizontal / Vertical Contrast (Landscape & Portrait Contrast)</option>
-                      <option value="focus_context">Focus & Context (75% Spanning Hero & Small Corner Detail)</option>
+                      <option value="focus_context">Focus & Context (75% Spanning Hero & Small Detail)</option>
                       <option value="foreground_background">Foreground / Background (Wide Left & Close-up Right)</option>
                       <option value="seamless_panoramic">Seamless Panoramic (Full-Bleed Spanning Spread)</option>
-                      <option value="double_mat">Double Mat (Centered Photos with Wide Borders)</option>
-                      <option value="split_border">Split-Border Look (One Bordered Photo, One Full-Bleed)</option>
+                      <option value="double_mat">Double Mat (Centered Photos with Matted Borders)</option>
+                      <option value="split_border">Split-Border Look (One Large Borderless, One Full-Bleed)</option>
+                      <option value="double_full_bleed">Double Full Bleed (Left & Right Full Bleed)</option>
+                      <option value="panoramic_cross_multi">Crossing Landscape & Dual Portrait</option>
+                      <option value="triptych_grid">Triptych Storyboard Grid (Minimalist Grid)</option>
                     </select>
                   </div>
                 </div>
@@ -1574,9 +1587,16 @@ export default function App() {
 
                             {spreadLayout === "full_bleed_right" && (
                               <>
-                                {/* Left Page (Empty Blank Paper) */}
-                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
+                                {/* Left Page (Centered Landscape Photo) */}
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className="w-[90%] h-[60%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-50 mix-blend-multiply z-10`}></div>
+                                  </div>
                                 </div>
 
                                 {/* Right Page (Full Bleed Photo) */}
@@ -1587,9 +1607,6 @@ export default function App() {
                                       ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
                                       : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
                                   } opacity-55 mix-blend-multiply z-10`}></div>
-                                  <svg className="w-10 h-10 opacity-30 text-stone-600 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
                                 </div>
                               </>
                             )}
@@ -1681,7 +1698,7 @@ export default function App() {
                                 {/* Left Page - Offset Top */}
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  <div className="absolute left-[18%] w-[64%] h-[48%] top-[12%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
+                                  <div className="absolute left-[12%] w-[76%] h-[56%] top-[8%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1692,7 +1709,7 @@ export default function App() {
                                 {/* Right Page - Offset Bottom */}
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
-                                  <div className="absolute right-[18%] w-[64%] h-[48%] bottom-[12%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
+                                  <div className="absolute right-[12%] w-[76%] h-[56%] bottom-[8%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1708,7 +1725,7 @@ export default function App() {
                                 {/* Left Page - Horizontal */}
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  <div className="w-[85%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                  <div className="w-[93%] h-[57%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1719,7 +1736,7 @@ export default function App() {
                                 {/* Right Page - Vertical */}
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
-                                  <div className="w-[62%] h-[82%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                  <div className="w-[68%] h-[90%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1734,8 +1751,8 @@ export default function App() {
                               <>
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  {/* Small Detail Photo */}
-                                  <div className="absolute left-[8%] bottom-[10%] w-[32%] h-[32%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center z-10">
+                                  {/* Small Detail Photo (enlarged) */}
+                                  <div className="absolute left-[8%] bottom-[10%] w-[48%] h-[48%] bg-stone-100 border border-stone-200/60 shadow-sm overflow-hidden flex items-center justify-center z-10">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1763,7 +1780,7 @@ export default function App() {
                                 {/* Left Page - Wide Environmental */}
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  <div className="w-[86%] h-[60%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                  <div className="w-[95%] h-[75%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1812,7 +1829,7 @@ export default function App() {
                               <>
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  <div className="w-[56%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                  <div className="w-[73%] h-[68%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1822,7 +1839,7 @@ export default function App() {
                                 </div>
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
-                                  <div className="w-[56%] h-[52%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                  <div className="w-[73%] h-[68%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
                                     <div className={`absolute inset-0 ${
                                       photoStyle === "bw" 
                                         ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
@@ -1837,15 +1854,12 @@ export default function App() {
                               <>
                                 <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
                                   <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
-                                  <div className="w-[74%] h-[78%] bg-white border border-stone-300 shadow-md relative p-2 pb-6 flex flex-col justify-between">
-                                    <div className="w-full h-[82%] bg-stone-100 relative overflow-hidden flex items-center justify-center">
-                                      <div className={`absolute inset-0 ${
-                                        photoStyle === "bw" 
-                                          ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
-                                          : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
-                                      } opacity-40 mix-blend-multiply z-10`}></div>
-                                    </div>
-                                    <div className="w-full h-2 bg-stone-100/20"></div>
+                                  <div className="w-[90%] h-[80%] bg-stone-100 shadow-md relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
                                   </div>
                                 </div>
 
@@ -1856,6 +1870,99 @@ export default function App() {
                                       ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
                                       : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
                                   } opacity-55 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "double_full_bleed" && (
+                              <>
+                                {/* Left Page - Full Bleed */}
+                                <div className="w-1/2 h-full bg-stone-100 relative border-r border-stone-200/60 overflow-hidden flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-55 mix-blend-multiply z-10`}></div>
+                                </div>
+                                {/* Right Page - Full Bleed */}
+                                <div className="w-1/2 h-full bg-stone-100 relative overflow-hidden flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-55 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "panoramic_cross_multi" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                </div>
+
+                                {/* Spanning Landscape Image (Lefthand + 10% bleed to Righthand) */}
+                                <div className="absolute left-[6%] w-[49%] top-[18%] bottom-[18%] bg-stone-100 border border-stone-200/60 shadow-md z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-45 mix-blend-multiply z-10`}></div>
+                                </div>
+
+                                {/* Two Portrait Images on Right Side */}
+                                <div className="absolute right-[27%] w-[19%] top-[18%] bottom-[18%] bg-stone-100 border border-stone-200/60 shadow-md z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-40 mix-blend-multiply z-10`}></div>
+                                </div>
+                                <div className="absolute right-[6%] w-[19%] top-[18%] bottom-[18%] bg-stone-100 border border-stone-200/60 shadow-md z-10 overflow-hidden flex items-center justify-center">
+                                  <div className={`absolute inset-0 ${
+                                    photoStyle === "bw" 
+                                      ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                      : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                  } opacity-40 mix-blend-multiply z-10`}></div>
+                                </div>
+                              </>
+                            )}
+
+                            {spreadLayout === "triptych_grid" && (
+                              <>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative border-r border-stone-100 flex items-center justify-center p-4">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-l-sm"></div>
+                                  {/* Left: 1 vertical photo */}
+                                  <div className="w-[85%] h-[85%] bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                </div>
+                                <div className="w-1/2 h-full bg-[#FCFAF7] relative p-4 flex flex-col justify-between">
+                                  <div className="absolute inset-0 bg-stone-500/5 mix-blend-multiply rounded-r-sm"></div>
+                                  {/* Right: 2 stacked landscape photos */}
+                                  <div className="w-[90%] h-[41%] mx-auto mt-2 bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
+                                  <div className="w-[90%] h-[41%] mx-auto mb-2 bg-stone-100 border border-stone-200/60 shadow-sm relative overflow-hidden flex items-center justify-center">
+                                    <div className={`absolute inset-0 ${
+                                      photoStyle === "bw" 
+                                        ? "bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 grayscale" 
+                                        : "bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-900/10"
+                                    } opacity-40 mix-blend-multiply z-10`}></div>
+                                  </div>
                                 </div>
                               </>
                             )}
