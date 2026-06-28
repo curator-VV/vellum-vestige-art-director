@@ -28,7 +28,9 @@ import {
   ShieldCheck,
   CheckCircle2,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  CloudLightning,
+  Loader2
 } from "lucide-react";
 
 // Brand constants from Vellum & Vestige guidelines
@@ -238,6 +240,9 @@ export default function App() {
   const [viewMode, setViewMode] = useState("draft"); // "draft" | "photo"
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [currentBase64, setCurrentBase64] = useState<string | null>(null);
+  const [isSavingToCloud, setIsSavingToCloud] = useState(false);
+  const [isSavedToCloud, setIsSavedToCloud] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [loadingQuoteIndex, setLoadingQuoteIndex] = useState(0);
 
@@ -662,31 +667,64 @@ export default function App() {
         throw new Error(lastError?.message || "No image data returned from any Google Gemini model attempts.");
       }
 
-      // 3. Save the base64 image data back to the server to store on our persistent disk
-      const saveResponse = await fetch("/api/save-generated-image", {
+      // Store generated base64 and set image URL instantly
+      setCurrentBase64(imageBase64);
+      setGeneratedImageUrl(`data:image/png;base64,${imageBase64}`);
+      setIsSavedToCloud(false);
+      
+      // Keep background copy locally if running on server
+      try {
+        fetch("/api/save-generated-image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            imageBase64: imageBase64
+          })
+        });
+      } catch (saveErr) {
+        console.warn("Background local save failed (continuing with cloud gallery):", saveErr);
+      }
+    } catch (err: any) {
+      console.error("Error generating image:", err);
+      setGenerationError(err.message || "An unexpected error occurred during generation.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleExportToGCS = async () => {
+    if (!currentBase64) return;
+    setIsSavingToCloud(true);
+    setGenerationError(null);
+    try {
+      const finalPrompt = getCompiledPrompt();
+      const response = await fetch("/api/upload-to-gcs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          imageBase64: imageBase64
+          imageBase64: currentBase64
         })
       });
 
-      const saveData = await saveResponse.json();
-      if (!saveResponse.ok) {
-        throw new Error(saveData.error?.message || saveData.error || "Failed to save generated image on server.");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || data.error || "Failed to upload to Google Cloud Storage");
       }
 
-      if (saveData.imageUrl) {
-        setGeneratedImageUrl(saveData.imageUrl);
-        
-        // Add to history list
+      if (data.imageUrl) {
+        setIsSavedToCloud(true);
+        setGeneratedImageUrl(data.imageUrl);
+
+        // Add to history list with the permanent GCS URL
         const newItem: HistoryItem = {
           id: Math.random().toString(36).substring(2, 9),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           prompt: finalPrompt,
-          imageUrl: saveData.imageUrl,
+          imageUrl: data.imageUrl,
           settings: {
             platform,
             swatch,
@@ -709,18 +747,18 @@ export default function App() {
             compositionArrangement
           }
         };
-        
-        const updatedHistory = [newItem, ...historyList].slice(0, 12); // Limit to 12 history items
+
+        const updatedHistory = [newItem, ...historyList].slice(0, 12);
         setHistoryList(updatedHistory);
         localStorage.setItem("vv_generation_history", JSON.stringify(updatedHistory));
       } else {
-        throw new Error("No image URL returned from the server.");
+        throw new Error("No image URL returned from GCS upload.");
       }
     } catch (err: any) {
-      console.error("Error generating image:", err);
-      setGenerationError(err.message || "An unexpected error occurred during generation.");
+      console.error("Error exporting to GCS:", err);
+      setGenerationError(err.message || "An unexpected error occurred during GCS export.");
     } finally {
-      setIsGenerating(false);
+      setIsSavingToCloud(false);
     }
   };
 
@@ -1918,15 +1956,43 @@ export default function App() {
                         </div>
 
                         {/* Controls */}
-                        <div className="flex gap-4 mt-6">
+                        <div className="flex flex-wrap justify-center gap-3 mt-6">
+                          {!isSavedToCloud ? (
+                            <button
+                              onClick={handleExportToGCS}
+                              disabled={isSavingToCloud}
+                              className="bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-[#D7CEBE] px-4 py-2 rounded text-[10px] uppercase tracking-widest font-bold transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 shadow-sm"
+                            >
+                              {isSavingToCloud ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  <span>Saving to GCS...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <CloudLightning className="w-3.5 h-3.5" />
+                                  <span>Save to Cloud Gallery</span>
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <div className="bg-emerald-700 text-[#D7CEBE] px-4 py-2 rounded text-[10px] uppercase tracking-widest font-bold flex items-center gap-1.5 shadow-sm select-none">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Saved to Cloud Gallery</span>
+                            </div>
+                          )}
+
                           <a
                             href={generatedImageUrl}
                             download={`vellum_vestige_${selectedVolume}.png`}
+                            target="_blank"
+                            rel="noreferrer"
                             className="bg-[#1F2022] hover:bg-[#1f2022]/90 text-[#D7CEBE] px-4 py-2 rounded text-[10px] uppercase tracking-widest font-bold transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5 shadow-sm"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Masterpiece</span>
                           </a>
+
                           <button
                             onClick={() => setViewMode("draft")}
                             className="bg-stone-200 hover:bg-stone-300 text-stone-700 px-4 py-2 rounded text-[10px] uppercase tracking-widest font-bold transition-all cursor-pointer"
@@ -2023,8 +2089,33 @@ export default function App() {
                           <img 
                             src={item.imageUrl} 
                             alt="History thumbnail" 
-                            className="object-cover w-full h-full group-hover:scale-115 transition-all duration-300"
+                            className="object-cover w-full h-full group-hover:scale-110 transition-all duration-300"
+                            draggable="true"
                           />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <a 
+                              href={item.imageUrl} 
+                              download={`vv_artdirector_${item.id}.png`} 
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-1 rounded bg-white/20 text-[#D7CEBE] hover:bg-white/40 hover:text-white transition-all"
+                              title="Download"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </a>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(item.imageUrl);
+                                alert("Cloud URL copied to clipboard!");
+                              }}
+                              className="p-1 rounded bg-white/20 text-[#D7CEBE] hover:bg-white/40 hover:text-white transition-all"
+                              title="Copy Link"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                         <div className="flex justify-between items-center mt-1">
                           <span className="text-[7.5px] font-mono text-stone-500">{item.timestamp}</span>

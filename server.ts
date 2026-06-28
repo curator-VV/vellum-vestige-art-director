@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import fs from "fs";
 
@@ -48,6 +49,67 @@ async function startServer() {
     } catch (error: any) {
       console.error("Error saving image:", error);
       return res.status(500).json({ error: "Save Error", message: error.message });
+    }
+  });
+
+  // API Route: Upload generated image base64 bytes to GCS
+  app.post("/api/upload-to-gcs", async (req, res) => {
+    try {
+      const { imageBase64 } = req.body;
+      if (!imageBase64) {
+        return res.status(400).json({ error: "Missing image data" });
+      }
+
+      const bucketName = process.env.GCS_BUCKET;
+      const credentialsJSON = process.env.GCS_CREDENTIALS;
+
+      if (!bucketName || !credentialsJSON) {
+        return res.status(400).json({
+          error: "Missing GCS configuration",
+          message: "Please configure GCS_BUCKET and GCS_CREDENTIALS in your environment secrets."
+        });
+      }
+
+      let credentials;
+      try {
+        credentials = JSON.parse(credentialsJSON);
+      } catch (err) {
+        return res.status(400).json({
+          error: "Invalid Credentials JSON",
+          message: "GCS_CREDENTIALS environment variable must be a valid JSON string."
+        });
+      }
+
+      // Initialize GCS client
+      const storage = new Storage({ credentials });
+      const bucket = storage.bucket(bucketName);
+
+      const filename = `vv_gen_${Date.now()}_${Math.floor(Math.random() * 100000)}.png`;
+      const file = bucket.file(filename);
+
+      const imageBuffer = Buffer.from(imageBase64, "base64");
+
+      // Save file to GCS
+      await file.save(imageBuffer, {
+        metadata: {
+          contentType: "image/png",
+          cacheControl: "public, max-age=31536000",
+        },
+        resumable: false,
+      });
+
+      // Make the file publicly readable (optional: standard for public buckets or public URLs)
+      try {
+        await file.makePublic();
+      } catch (pubErr) {
+        console.warn("GCS makePublic failed (this is normal if bucket uniform access is enabled):", pubErr);
+      }
+
+      const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+      return res.json({ success: true, imageUrl: publicUrl });
+    } catch (error: any) {
+      console.error("Error uploading to GCS:", error);
+      return res.status(500).json({ error: "Upload Error", message: error.message });
     }
   });
 

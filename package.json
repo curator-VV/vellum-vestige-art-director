@@ -15,6 +15,7 @@
     "electron:pack": "npm run build && electron-builder"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.21.0",
     "@google/genai": "^2.4.0",
     "@tailwindcss/vite": "^4.1.14",
     "@types/express": "^4.17.21",
